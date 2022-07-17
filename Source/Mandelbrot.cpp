@@ -66,6 +66,10 @@ Mandelbrot::Mandelbrot(int width, int height)
 
 void Mandelbrot::userInput()
 {
+    if (Input::isKeyPressed(GLFW_KEY_ESCAPE)) {
+        glfwSetWindowShouldClose(m_Window, true);
+    }
+
     if (Input::isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
         m_ZoomXAmp -= m_ZoomSpeed * m_ZoomXAmp * m_dt;
         m_ZoomYAmp -= m_ZoomSpeed * m_ZoomYAmp * m_dt;
@@ -138,10 +142,10 @@ void Mandelbrot::run() {
 
         if (m_HasToRender) {
             compute.use();
-            compute.setUniform1f("xa", m_ZoomX - m_ZoomXAmp);
-            compute.setUniform1f("xb", m_ZoomX + m_ZoomXAmp);
-            compute.setUniform1f("ya", m_ZoomY - m_ZoomYAmp);
-            compute.setUniform1f("yb", m_ZoomY + m_ZoomYAmp);
+            compute.setUniform1d("xa", m_ZoomX - m_ZoomXAmp);
+            compute.setUniform1d("xb", m_ZoomX + m_ZoomXAmp);
+            compute.setUniform1d("ya", m_ZoomY - m_ZoomYAmp);
+            compute.setUniform1d("yb", m_ZoomY + m_ZoomYAmp);
             glDispatchCompute(m_Width, m_Height, 1);
             glMemoryBarrier(GL_ALL_BARRIER_BITS);
             m_HasToRender = false;
@@ -158,4 +162,7 @@ void Mandelbrot::run() {
         beginTime = endTime;
         glfwSetWindowTitle(m_Window, std::to_string(1.0f / m_dt).c_str());
     }
+
+    glfwDestroyWindow(m_Window);
+    glfwTerminate();
 }

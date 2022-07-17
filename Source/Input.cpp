@@ -15,14 +15,24 @@ namespace Input {
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
 		if (key >= 0 && key < GLFW_KEY_LAST) {
-			keyStates[key] = action == GLFW_PRESS;
+			if (action == GLFW_PRESS) {
+				keyStates[key] = true;
+			}
+			else if (action == GLFW_RELEASE) {
+				keyStates[key] = false;
+			}
 		}
 	}
 
 	void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 	{
 		if (button >= 0 && button < GLFW_MOUSE_BUTTON_LAST) {
-			mouseButtonStates[button] = action == GLFW_PRESS;
+			if (action == GLFW_PRESS) {
+				mouseButtonStates[button] = true;
+			}
+			else if (action == GLFW_RELEASE) {
+				mouseButtonStates[button] = false;
+			}
 		}
 	}
 

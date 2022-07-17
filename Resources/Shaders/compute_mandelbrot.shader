@@ -3,10 +3,10 @@
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 layout(rgba32f, binding = 0) uniform image2D screen;
 
-uniform highp float xa;
-uniform highp float xb;
-uniform highp float ya;
-uniform highp float yb;
+uniform double xa;
+uniform double xb;
+uniform double ya;
+uniform double yb;
 
 const int limit = 500;
 
@@ -43,8 +43,8 @@ void main() {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	ivec2 size = imageSize(screen);
 
-	float a = (float(size.x) - storePos.x) / float(size.x) * (xb - xa) + xa;
-	float b = storePos.y / float(size.y) * (yb - ya) + ya;
+	double a = (double(size.x) - storePos.x) / double(size.x) * (xb - xa) + xa;
+    double b = storePos.y / double(size.y) * (yb - ya) + ya;
 
 	vec2 c = vec2(a, b);
 	vec2 z = vec2(0.0, 0.0);

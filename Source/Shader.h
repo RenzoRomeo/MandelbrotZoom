@@ -10,6 +10,7 @@ public:
 	~Shader();
 
 	void setUniform1f(const std::string& name, const float value) const;
+	void setUniform1d(const std::string& name, const double value) const;
 	void setUniform1i(const std::string& name, const int value) const;
 	void setUniformVec3f(const std::string& name, float v0, float v1, float v2) const;
 
