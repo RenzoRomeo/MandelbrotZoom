@@ -1,6 +1,6 @@
 # MandelbrotZoom
 
-This is Mandelbrot Set explorer.
+Mandelbrot Set explorer.
 
 All calculations are done on the GPU, using OpenGL compute shaders.
 
