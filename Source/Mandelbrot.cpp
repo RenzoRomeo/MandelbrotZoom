@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Shader.h"
+#include "Input.h"
 
 GLfloat vertices[] = {
     -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
@@ -47,6 +48,9 @@ Mandelbrot::Mandelbrot(int width, int height)
     }
 
     glfwMakeContextCurrent(m_Window);
+    glfwSetScrollCallback(m_Window, Input::scrollCallback);
+    glfwSetMouseButtonCallback(m_Window, Input::mouseButtonCallback);
+    glfwSetKeyCallback(m_Window, Input::keyCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD.\n";
@@ -58,6 +62,37 @@ Mandelbrot::Mandelbrot(int width, int height)
     glViewport(0, 0, m_Width, m_Height);
 
     glfwShowWindow(m_Window);
+}
+
+void Mandelbrot::userInput()
+{
+    if (Input::isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+        m_ZoomXAmp -= m_ZoomSpeed * m_ZoomXAmp * m_dt;
+        m_ZoomYAmp -= m_ZoomSpeed * m_ZoomYAmp * m_dt;
+        m_HasToRender = true;
+    }
+    else if (Input::isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+        m_ZoomXAmp += m_ZoomSpeed * m_ZoomXAmp * m_dt;
+        m_ZoomYAmp += m_ZoomSpeed * m_ZoomYAmp * m_dt;
+        m_HasToRender = true;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_W)) {
+        m_ZoomY += m_MoveSpeed * m_ZoomYAmp * m_dt;
+        m_HasToRender = true;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_S)) {
+        m_ZoomY -= m_MoveSpeed * m_ZoomYAmp * m_dt;
+        m_HasToRender = true;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_D)) {
+        m_ZoomX -= m_MoveSpeed * m_ZoomXAmp * m_dt;
+        m_HasToRender = true;
+    }
+    if (Input::isKeyPressed(GLFW_KEY_A)) {
+        m_ZoomX += m_MoveSpeed * m_ZoomXAmp * m_dt;
+        m_HasToRender = true;
+    }
+    m_ZoomSpeed += Input::yoff * m_dt * 0.2;
 }
 
 void Mandelbrot::run() {
@@ -93,30 +128,24 @@ void Mandelbrot::run() {
     glVertexArrayVertexBuffer(VAO, 0, VBO, 0, 5 * sizeof(GLfloat));
     glVertexArrayElementBuffer(VAO, EBO);
 
-    float beginTime = (float)glfwGetTime();
-    float endTime;
-    float dt = -1.0f;
-
-    double zoomX = 0.0;
-    double zoomY = 1.0;
-    double zoomXAmp = 1.6;
-    double zoomYAmp = 0.9;
-    double zoomSpeed = 0.5;
+    double beginTime = glfwGetTime();
+    double endTime;
 
     while (!glfwWindowShouldClose(m_Window)) {
         glfwPollEvents();
 
-        compute.use();
-        compute.setUniform1f("xa", zoomX - zoomXAmp);
-        compute.setUniform1f("xb", zoomX + zoomXAmp);
-        compute.setUniform1f("ya", zoomY - zoomYAmp);
-        compute.setUniform1f("yb", zoomY + zoomYAmp);
+        userInput();
 
-        zoomXAmp -= zoomSpeed * zoomXAmp * dt;
-        zoomYAmp -= zoomSpeed * zoomYAmp * dt;
-
-        glDispatchCompute(m_Width, m_Height, 1);
-        glMemoryBarrier(GL_ALL_BARRIER_BITS);
+        if (m_HasToRender) {
+            compute.use();
+            compute.setUniform1f("xa", m_ZoomX - m_ZoomXAmp);
+            compute.setUniform1f("xb", m_ZoomX + m_ZoomXAmp);
+            compute.setUniform1f("ya", m_ZoomY - m_ZoomYAmp);
+            compute.setUniform1f("yb", m_ZoomY + m_ZoomYAmp);
+            glDispatchCompute(m_Width, m_Height, 1);
+            glMemoryBarrier(GL_ALL_BARRIER_BITS);
+            m_HasToRender = false;
+        }
 
         glBindTextureUnit(0, screenTex);
         display.use();
@@ -124,9 +153,9 @@ void Mandelbrot::run() {
         glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(m_Window);
-        endTime = (float)glfwGetTime();
-        dt = endTime - beginTime;
+        endTime = glfwGetTime();
+        m_dt = endTime - beginTime;
         beginTime = endTime;
-        glfwSetWindowTitle(m_Window, std::to_string(1.0f / dt).c_str());
+        glfwSetWindowTitle(m_Window, std::to_string(1.0f / m_dt).c_str());
     }
 }

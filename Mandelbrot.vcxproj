@@ -139,12 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Mandelbrot.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
     <ClCompile Include="Vendor\glad.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\Mandelbrot.h" />
     <ClInclude Include="Source\Shader.h" />
   </ItemGroup>
