@@ -30,3 +30,4 @@ I used:
 
 - Improve precision. Currently, the deepest level of zoom is limited by floating point number precision.
 - Custom color palette.
+- Make the number of iterations customizable.
