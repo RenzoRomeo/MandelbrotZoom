@@ -99,9 +99,9 @@ void Mandelbrot::run() {
 
     double zoomX = 0.0;
     double zoomY = 1.0;
-    double zoomXAmp = 1.0;
-    double zoomYAmp = 1.0;
-    double zoomSpeed = 1.5;
+    double zoomXAmp = 1.6;
+    double zoomYAmp = 0.9;
+    double zoomSpeed = 0.5;
 
     while (!glfwWindowShouldClose(m_Window)) {
         glfwPollEvents();
